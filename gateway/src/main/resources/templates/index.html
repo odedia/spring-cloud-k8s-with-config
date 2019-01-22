@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv=" Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Spring Microservices Demo</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Merriweather:700i" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://unpkg.com/normalize.css@8.0.0/normalize.css"/>
+    <link rel="stylesheet" href="/styles.css"/>
+</head>
+<body>
+<div id="container">
+    <h1>Spring Microservices Demo</h1>
+
+    <h2>/api/time</h2>
+    <p>Get current time:</p>
+    <p><code>$ curl "<span th:text="${timeUri}"/>/current"<br/><span class="output">2018-12-15T02:06:59.439+01:00</span></code>
+    </p>
+    <p>This service is protected by a
+        <a href="https://cloud.spring.io/spring-cloud-static/spring-cloud-gateway/2.0.2.RELEASE/single/spring-cloud-gateway.html#_redis_ratelimiter">rate
+            limiter</a>.
+        If too many requests are received, HTTP error <code>429 Too Many Requests</code> is sent.</p>
+
+    <h2>/api/echo</h2>
+    <p>Get JSON request body in response:</p>
+    <p><code>$ curl -X POST "<span th:text="${echoUri}"/>/mirror" \<br/> -H "Content-Type: application/json" \<br/>
+        -d '{ "name": "Spring" }'<br/><span class="output">{"echo":{"name":"Spring"}}%</span></code>
+    </p>
+
+    <h2>/api/whoami</h2>
+    <p>Get information from a running application instance:</p>
+    <p><code>$ curl "<span th:text="${whoamiUri}"/>/id"<br/><span class="output">whoami/0%</span></code></p>
+    <p><code>$ curl "<span th:text="${whoamiUri}"/>/ip"<br/><span class="output">10.255.175.240%</span></code></p>
+    <p><code>$ curl "<span th:text="${whoamiUri}"/>/hostname"<br/>
+        <span class="output">ec6f3b77-8947-47e7-4d6e-27c6%</span></code></p>
+    <p><code>$ curl "<span th:text="${whoamiUri}"/>/info"<br/>
+        <span class="output">{"id":"whoami/0","hostname":"a0f22de1-7a06-4d26-7f36-d259","ip":"10.255.175.248"}%</span></code>
+    </p>
+
+    <h2>/api/greeting</h2>
+    <p>Get classic greeting text:</p>
+    <p><code>$ curl "<span th:text="${greetingUri}"/>/hello?name=Spring"<br/><span class="output">Hello Spring!%</span></code>
+    </p>
+    <p>This microservice is using the <a href="https://martinfowler.com/bliki/CircuitBreaker.html">circuit breaker</a>
+        pattern to handle service outage. Find out what happens if you try to reach this API endpoint
+        while the backend service is not running.</p>
+
+    <div id="footer">
+        <p><a href="https://pivotal.io"><img src="/images/pivotal-spring-logos.png"/></a></p>
+    </div>
+</div>
+
+<a href="https://github.com/alexandreroman/spring-microservices-demo"><img
+        style="position: absolute; top: 0; right: 0; border: 0;"
+        src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png"
+        alt="Fork me on GitHub"></a>
+</body>
+</html>

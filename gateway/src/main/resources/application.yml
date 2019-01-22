@@ -1,0 +1,63 @@
+server:
+  port: ${PORT:8080}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+logging:
+  level:
+    org:
+      springframework:
+        cloud:
+          gateway: DEBUG
+
+spring:
+  application:
+    name: spring-microservices-gateway
+  cloud:
+    gateway:
+      # See route spec here:
+      # https://github.com/spring-cloud/spring-cloud-gateway/blob/master/docs/src/main/asciidoc/spring-cloud-gateway.adoc
+
+      routes:
+        - id: echo
+          uri: ${microservices.echo}
+          predicates:
+            - Path=/api/echo/{segment}
+
+        - id: time
+          uri: ${microservices.time}
+          predicates:
+            - Path=/api/time/{segment}
+          filters:
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter:
+                  # How many requests per second do you want a user to be allowed to do?
+                  replenish-rate: 1
+                  # Maximum number of requests a user is allowed to do in a single second.
+                  burst-capacity: 1
+
+        - id: whoami
+          uri: ${microservices.whoami}
+          predicates:
+            - Path=/api/whoami/{segment}
+
+        - id: greeting
+          uri: ${microservices.greeting}
+          predicates:
+            - Path=/api/greeting/{segment}
+          filters:
+            - name: Hystrix
+              args:
+                name: greetingFallback
+                fallbackUri: forward:/api/fallback/greeting
+
+microservices:
+  echo: "http://localhost:8083/api/echo"
+  time: "http://localhost:8082/api/time"
+  greeting: "http://localhost:8081/api/greeting"
+  whoami: "http://localhost:8084/api/whoami"
